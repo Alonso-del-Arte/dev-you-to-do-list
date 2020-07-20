@@ -36,6 +36,7 @@ class DueDateComparatorTest {
 
     @Test
     void testComparator() {
+        System.out.println("Comparator");
         ArrayList<Activity> expected = new ArrayList<>();
         expected.add(PRIMARY_VOTE);
         expected.add(CASTING_PREP);

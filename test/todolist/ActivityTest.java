@@ -1,9 +1,12 @@
 package todolist;
 
-import org.junit.jupiter.api.Test;
-
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
 
+import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ActivityTest {
@@ -76,6 +79,52 @@ class ActivityTest {
     }
 
     @Test
+    void testPriority() {
+        System.out.println("priority");
+        double importance = 0.8;
+        LocalDateTime dueDate = LocalDateTime.now().plusDays(20);
+        Activity toDoListItem = new Activity("Get haircut", importance, dueDate);
+        double expected = 0.04;
+        double actual = toDoListItem.priority();
+        assertEquals(expected, actual, TEST_DELTA);
+    }
+
+    @Test
+    void testPriorityDueToday() {
+        double importance = 1.0;
+        LocalDateTime dueDate = LocalDateTime.now();
+        Activity toDoListItem = new Activity("Urgent task", importance, dueDate);
+        double expected = 0.0;
+        double actual = toDoListItem.priority();
+        assertEquals(expected, actual, TEST_DELTA);
+    }
+
+    @Test
+    void testPriorityPastDueIncomplete() {
+        double importance = 1.0;
+        LocalDateTime dueDate = LocalDateTime.now().minusDays(20);
+        Activity toDoListItem = new Activity("Renew software licenses",
+                importance, dueDate);
+        double priority = toDoListItem.priority();
+        String msg = "Priority " + priority + " of past due incomplete item should be negative";
+        assert priority < 0.0 : msg;
+    }
+
+    @Test
+    void testPriorityComplete() {
+        double importance = 1.0;
+        LocalDateTime dueDate = LocalDateTime.now().minusDays(20);
+        Activity toDoListItem = new Activity("Renew software licenses",
+                importance, dueDate);
+        toDoListItem.toggleCompletionStatus();
+        double priority = toDoListItem.priority();
+        double threshold = 373760.5;
+        String msg = "Priority " + priority
+                + " of completed item should be greater than " + threshold;
+        assert priority > threshold : msg;
+    }
+
+    @Test
     void testGetDueDate() {
         System.out.println("getDueDate");
         LocalDateTime expected = LocalDateTime.now().plusDays(14);
@@ -93,6 +142,23 @@ class ActivityTest {
         toDoListItem.setDueDate(expected);
         LocalDateTime actual = toDoListItem.getDueDate();
         assertEquals(expected, actual);
+    }
+
+    @Test
+    void testCompletionStatus() {
+        System.out.println("completionStatus");
+        Activity toDoListItem = new Activity("Reorganize contacts list");
+        String msg = "Newly constructed Activity should not be marked completed";
+        assert !toDoListItem.completionStatus() : msg;
+    }
+
+    @Test
+    void testToggleCompletionStatus() {
+        System.out.println("toggleCompletionStatus");
+        Activity toDoListItem = new Activity("Reorganize contacts list");
+        toDoListItem.toggleCompletionStatus();
+        String msg = "Newly constructed Activity should be marked completed after toggle";
+        assert toDoListItem.completionStatus() : msg;
     }
 
     @Test
@@ -175,6 +241,16 @@ class ActivityTest {
         assertEquals(someTask, sameTask);
     }
 
+    private ArrayList<Activity> makeTestItems() {
+        ArrayList<Activity> items = new ArrayList<>();
+        return items;
+    }
+
+    @Test
+    void testHashCode() {
+        fail("Haven't written test yet");
+    }
+
     @Test
     void testConstructorTrimsExcessImportance() {
         Activity toDoListItem = new Activity("Balance checkbook", Double.MAX_VALUE);
@@ -198,8 +274,6 @@ class ActivityTest {
         double actual = toDoListItem.getImportance();
         assertEquals(expected, actual, TEST_DELTA);
     }
-
-    // TODO: Write tests for hashCode()
 
     @Test
     void testConstructorDefaultImportanceZeroPointFiveDueDateGiven() {

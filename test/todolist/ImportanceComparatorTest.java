@@ -36,6 +36,7 @@ class ImportanceComparatorTest {
 
     @Test
     void testComparator() {
+        System.out.println("Comparator");
         ArrayList<Activity> expected = new ArrayList<>();
         expected.add(PRIMARY_VOTE);
         expected.add(GENERAL_VOTE);

@@ -2,6 +2,7 @@ package todolist;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 
 public class Activity implements Serializable {
 
@@ -22,7 +23,7 @@ public class Activity implements Serializable {
 
     private double importanceScore;
 
-    private boolean completedFlag = true;
+    private boolean completedFlag = false;
 
     public String getDescription() {
         return this.description;
@@ -34,6 +35,18 @@ public class Activity implements Serializable {
 
     public double getImportance() {
         return this.importanceScore;
+    }
+
+    public double priority() {
+        if (this.completedFlag) return Double.MAX_VALUE;
+        long days = ChronoUnit.DAYS.between(LocalDateTime.now(), this.dueDate);
+        double recip;
+        if (days == 0L) {
+            recip = 0.0;
+        } else {
+            recip = 1.0 / days;
+        }
+        return this.importanceScore * recip;
     }
 
     public void setImportance(double score) {
@@ -62,7 +75,7 @@ public class Activity implements Serializable {
     }
 
     public void toggleCompletionStatus() {
-//        this.completedFlag = !this.completedFlag;
+        this.completedFlag = !this.completedFlag;
     }
 
     @Override
@@ -87,16 +100,14 @@ public class Activity implements Serializable {
         return this.dueDate.equals(other.dueDate);
     }
 
-    // TODO: Reset to stub and write tests
     @Override
     public int hashCode() {
-//        return 0;
-        int hash = this.description.hashCode();
-        short score = (short) Math.floor(this.importanceScore * DISCR);
-        hash += score;
-        if (this.dueDate.isBefore(FAR_OFF_FUTURE_MARKER)) {
-            hash = 443 * hash + this.dueDate.hashCode();
-        }
+        int hash = 0;// this.description.hashCode();
+//        short score = (short) Math.floor(this.importanceScore * DISCR);
+//        hash += score;
+//        if (this.dueDate.isBefore(FAR_OFF_FUTURE_MARKER)) {
+//            hash = 443 * hash + this.dueDate.hashCode();
+//        }
         return hash;
     }
 
